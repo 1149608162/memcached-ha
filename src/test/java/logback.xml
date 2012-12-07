@@ -1,0 +1,22 @@
+<configuration>
+
+	<appender name="STDOUT-memcached-ha" class="ch.qos.logback.core.ConsoleAppender">
+		<layout class="ch.qos.logback.classic.PatternLayout">
+			<Pattern>%contextName %level %msg%n</Pattern>
+		</layout>
+		
+		<filter class="ch.qos.logback.core.filter.EvaluatorFilter">
+			<evaluator>
+				<expression>logger.contains("com.baidu") &amp;&amp; level &lt;= INFO</expression>
+			</evaluator>
+			<OnMismatch>NEUTRAL</OnMismatch>
+			<OnMatch>DENY</OnMatch>
+		</filter>
+		
+	</appender>
+
+	<root level="debug">
+		<level value="INFO" />
+		<appender-ref ref="STDOUT-memcached-ha" />
+	</root>
+</configuration>
