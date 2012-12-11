@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:jee="http://www.springframework.org/schema/jee" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans
+	   	http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+       	http://www.springframework.org/schema/context
+       	http://www.springframework.org/schema/context/spring-context-2.5.xsd
+       	http://www.springframework.org/schema/util
+       	http://www.springframework.org/schema/util/spring-util-2.5.xsd
+       	http://www.springframework.org/schema/jee
+       	http://www.springframework.org/schema/jee/spring-jee-2.5.xsd
+       	http://www.springframework.org/schema/tx
+       	http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
+       	http://www.springframework.org/schema/aop
+    	http://www.springframework.org/schema/aop/spring-aop-2.5.xsd">
+    	
+
+	<bean id="clientFactory" class="com.baidu.memcachedha.client.ClientFactory">
+		<!-- number conectors of memcahed server in every client-->
+		<property name="workPoolSize" value="4" />
+		<!-- command time out -->
+		<property name="opTimeout" value="5000" />
+	</bean>
+
+
+	<bean id="clientDispatch" class="com.baidu.memcachedha.MemcachedClientDispatch">
+		<!-- then primary cached miss to do retry time -->
+		<property name="primaryRetry" value="2" />
+		<!-- wait for this time to init breath -->
+		<property name="initalTime" value="1000" />
+		<!-- every breath time -->
+		<property name="breathTime" value="1000" />
+		<!-- memcached-ha to do sync thread pool size -->
+		<property name="syncThread" value="8" />
+		<!-- memcached-ha to do broken reload thread pool size -->
+		<property name="reloadThread" value="8" />
+		<!-- method name to sync -->
+		<property name="syncMethods">
+			<set>
+				<value>add</value>
+				<value>set</value>
+			</set>
+		</property>
+		
+		<!-- client factory -->
+		<property name="clientFactory" ref="clientFactory"/>
+		
+		<!-- listeners -->
+		<property name="syncCommandListener" ref="commandListener"/>
+		<property name="reloadcCommandListener" ref="commandListener"/>
+		<property name="serverStatListener" ref="serverStatListener"/>
+		
+	</bean>
+	
+	<bean id="commandListener" class="com.baidu.memcachedha.test.RequestListener">
+	
+	</bean>
+	
+	<bean id="serverStatListener" class="com.baidu.memcachedha.test.ServerListener">
+	
+	</bean>
+</beans>
