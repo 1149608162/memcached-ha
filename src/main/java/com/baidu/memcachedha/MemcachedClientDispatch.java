@@ -176,6 +176,14 @@ public class MemcachedClientDispatch {
 	public void setReloadThread(int reloadThread) {
 		this.reloadThread = reloadThread;
 	}
+	
+	public ClientFactory getClientFactory() {
+		return clientFactory;
+	}
+
+	public void setClientFactory(ClientFactory clientFactory) {
+		this.clientFactory = clientFactory;
+	}
 
 	public synchronized void addKeeper(final MemcachedClientKeeper<?> keeper) throws IOException {
 

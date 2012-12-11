@@ -27,6 +27,14 @@ public class ClientFactory {
 		this.workPoolSize = workPoolSize;
 	}
 	
+	public int getOpTimeout() {
+		return opTimeout;
+	}
+
+	public void setOpTimeout(int opTimeout) {
+		this.opTimeout = opTimeout;
+	}
+
 	public Client getDefaultClient(final String ip, final int port ) throws IOException {
 		Client client = clientMap.get(ip + port);
 		if (client == null) {
