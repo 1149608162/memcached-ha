@@ -5,6 +5,12 @@ import java.lang.reflect.Method;
 
 import com.baidu.memcachedha.client.Client;
 
+/**
+ * Instance your memcached client and set to this class's object
+ * @author xuchenCN
+ *
+ * @param <T> your memcached client type
+ */
 public class MemcachedClientKeeper<T> {
 	private volatile int status;
 	private T clientInstance;

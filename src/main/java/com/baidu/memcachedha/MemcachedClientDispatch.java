@@ -28,6 +28,12 @@ import com.baidu.memcachedha.listener.ServerStatListener;
 import com.baidu.memcachedha.protocol.CommandEnum;
 import com.baidu.memcachedha.protocol.binary.BinaryCommandFactory;
 
+/**
+ * this class hold the MemcachedClientKeepers to dispatch command
+ * you can setting this class property to customize your need
+ * @author xuchenCN
+ *
+ */
 public class MemcachedClientDispatch {
 
 	private static final Logger LOG = LoggerFactory.getLogger(MemcachedClientDispatch.class);
@@ -62,11 +68,11 @@ public class MemcachedClientDispatch {
 
 	private ServerStatListener serverStatListener;
 
-	public List<MemcachedClientKeeper<?>> getKeepers() {
+	List<MemcachedClientKeeper<?>> getKeepers() {
 		return keepers;
 	}
 
-	public void setKeepers(List<MemcachedClientKeeper<?>> keepers) {
+	void setKeepers(List<MemcachedClientKeeper<?>> keepers) {
 		this.keepers = keepers;
 	}
 
@@ -84,14 +90,6 @@ public class MemcachedClientDispatch {
 
 	public void setSyncService(ExecutorService syncService) {
 		this.syncService = syncService;
-	}
-
-	public AtomicInteger getClientNumbers() {
-		return clientNumbers;
-	}
-
-	public void setClientNumbers(AtomicInteger clientNumbers) {
-		this.clientNumbers = clientNumbers;
 	}
 
 	public CommandListener getSyncCommandListener() {
@@ -125,7 +123,11 @@ public class MemcachedClientDispatch {
 	public Set<String> getSyncMethods() {
 		return syncMethods;
 	}
-
+	
+	/**
+	 * set which method your need 
+	 * @param syncMethods
+	 */
 	public void setSyncMethods(Set<String> syncMethods) {
 		this.syncMethods = syncMethods;
 	}
@@ -133,7 +135,11 @@ public class MemcachedClientDispatch {
 	public int getPrimaryRetry() {
 		return primaryRetry;
 	}
-
+	
+	/**
+	 * set retry count when primary server response null
+	 * @param primaryRetry
+	 */
 	public void setPrimaryRetry(int primaryRetry) {
 		this.primaryRetry = primaryRetry;
 	}
@@ -141,7 +147,11 @@ public class MemcachedClientDispatch {
 	public int getInitalTime() {
 		return initalTime;
 	}
-
+	
+	/**
+	 * set delay of start breath when server booted
+	 * @param initalTime
+	 */
 	public void setInitalTime(int initalTime) {
 		this.initalTime = initalTime;
 	}
@@ -149,7 +159,11 @@ public class MemcachedClientDispatch {
 	public int getBreathTime() {
 		return breathTime;
 	}
-
+	
+	/**
+	 * set every breath delay
+	 * @param breathTime
+	 */
 	public void setBreathTime(int breathTime) {
 		this.breathTime = breathTime;
 	}
@@ -157,7 +171,11 @@ public class MemcachedClientDispatch {
 	public int getSyncThread() {
 		return syncThread;
 	}
-
+	
+	/**
+	 * set synchronous workers
+	 * @param syncThread
+	 */
 	public void setSyncThread(int syncThread) {
 		this.syncThread = syncThread;
 	}
@@ -172,7 +190,11 @@ public class MemcachedClientDispatch {
 	public int getReloadThread() {
 		return reloadThread;
 	}
-
+	
+	/**
+	 * set reload workers
+	 * @param reloadThread
+	 */
 	public void setReloadThread(int reloadThread) {
 		this.reloadThread = reloadThread;
 	}
@@ -184,7 +206,12 @@ public class MemcachedClientDispatch {
 	public void setClientFactory(ClientFactory clientFactory) {
 		this.clientFactory = clientFactory;
 	}
-
+	
+	/**
+	 * add a client keeper
+	 * @param keeper
+	 * @throws IOException
+	 */
 	public synchronized void addKeeper(final MemcachedClientKeeper<?> keeper) throws IOException {
 
 		Client client = clientFactory.getDefaultClient(keeper.getIp(), keeper.getPort());
@@ -196,17 +223,54 @@ public class MemcachedClientDispatch {
 		keeperBreathSchedules.add(scheduleFuture);
 		clientNumbers.incrementAndGet();
 	}
-
+	
+	/**
+	 * invoke client method of <tt>CommandParam</tt>'s settings , and needSync is true at default , unreload
+	 * @param key
+	 * @param param a instance of CommandParam
+	 * @return
+	 * @throws SecurityException
+	 * @throws IllegalArgumentException
+	 * @throws NoSuchMethodException
+	 * @throws IllegalAccessException
+	 * @throws InvocationTargetException
+	 */
 	public Object command(final String key, final CommandParam param) throws SecurityException, IllegalArgumentException,
 			NoSuchMethodException, IllegalAccessException, InvocationTargetException {
 		return command(key, param, true, ReloadLevel.UNRELOAD, 0);
 	}
-
+	
+	/**
+	 * invoke client method of <tt>CommandParam</tt>'s settings , unreload
+	 * @param key
+	 * @param param
+	 * @param needSync when response is null and you need invoke method at other memcached server ,set is 'true'
+	 * @return
+	 * @throws SecurityException
+	 * @throws IllegalArgumentException
+	 * @throws NoSuchMethodException
+	 * @throws IllegalAccessException
+	 * @throws InvocationTargetException
+	 */
 	public Object command(final String key, final CommandParam param, boolean needSync) throws SecurityException,
 			IllegalArgumentException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
 		return command(key, param, needSync, ReloadLevel.UNRELOAD, 0);
 	}
-
+	
+	/**
+	 * invoke client method of <tt>CommandParam</tt>'s settings 
+	 * @param key
+	 * @param param a instance of CommandParam
+	 * @param needSync when response is null and you need invoke method at other memcached server ,set is 'true'
+	 * @param reload if you need this return value synchronous to other memcached server set it > 0  use <tt>ReloadLevel</tt>
+	 * @param reloadExpiry when reload what expiry you want
+	 * @return
+	 * @throws SecurityException
+	 * @throws IllegalArgumentException
+	 * @throws NoSuchMethodException
+	 * @throws IllegalAccessException
+	 * @throws InvocationTargetException
+	 */
 	public Object command(final String key, final CommandParam param, final boolean needSync, final int reload,
 			final int reloadExpiry) throws SecurityException, IllegalArgumentException, NoSuchMethodException,
 			IllegalAccessException, InvocationTargetException {

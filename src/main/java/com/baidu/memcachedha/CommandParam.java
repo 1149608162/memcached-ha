@@ -1,5 +1,10 @@
 package com.baidu.memcachedha;
 
+/**
+ * Instance this class to package your command parameter
+ * @author xuchenCN
+ *
+ */
 public class CommandParam {
 	
 	private String methodName;
@@ -12,15 +17,27 @@ public class CommandParam {
 		this.types = types;
 		this.args = args;
 	}
-
+	
+	/**
+	 * set your want to invoke method name
+	 * @param methodName
+	 */
 	public void setMethodName(String methodName) {
 		this.methodName = methodName;
 	}
-
+	
+	/**
+	 * set your parameters types
+	 * @param types
+	 */
 	public void setTypes(Class<?>[] types) {
 		this.types = types;
 	}
-
+	
+	/**
+	 * set your parameters
+	 * @param args
+	 */
 	public void setArgs(Object[] args) {
 		this.args = args;
 	}
